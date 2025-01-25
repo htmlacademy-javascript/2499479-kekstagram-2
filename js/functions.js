@@ -1,7 +1,7 @@
 //Первая функция
 
 const checkLength = (lineText, maxLength) => {
-  console.log('Длина строки: ' + lineText.length + ' символов');
+  console.log(lineText.length);
   if (lineText.length > maxLength) {
     return console.log('Строка превышает максимальное колличество символов');
   }
