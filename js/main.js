@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 //Массив случайных имен для авторов комментариев
 const names = ['Артём', 'Алексей', 'Семён', 'Светлана', 'Петр', 'Катерина', 'Валера', 'Юлия', 'Елена', 'Илья'];
 
@@ -63,4 +64,51 @@ function getRandomItem(randomElement) {
 const photosData = generateData();
 console.log(photosData);
 
+// Генератор айди по порядку от 0
 
+// function randomId () {
+//   let generateId = 0;
+//   return function (){
+//     generateId += 1;
+//     return generateId;
+//   };
+// }
+
+// const generatePhotoId = randomId();
+// const generateCommentId = randomId();
+
+// console.log(generatePhotoId()); // 1
+// console.log(generatePhotoId()); // 2
+// console.log(generateCommentId()); // 3
+// console.log(generatePhotoId()); // 3
+
+// Генератор случайных айди в пределах заданного диапазона
+
+// function getRandomInteger (min, max) {
+//   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
+//   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
+//   const result = Math.random() * (upper - lower + 1) + lower;
+
+//   return Math.floor(result);
+// }
+
+// function createRandomIdFromRangeGenerator (min, max) {
+//   const randomIds = [];
+
+//   return function () {
+//     let plusValue = getRandomInteger (min, max); // 1. Получить случайное целое положительное число
+//     randomIds.includes(randomIds); // 2. Проверить на уникальность. Повторить шаг 1, пока не получим уникальное число
+
+//     while (randomIds.includes(plusValue)) {
+//       plusValue = getRandomInteger(min, max); // 3. Запомнить полученное число
+//     }
+//     randomIds.push(plusValue); // 4. Вернуть результат
+//     return plusValue;
+//   };
+// }
+
+// const generatePhotoId = createRandomIdFromRangeGenerator(1, 25);
+
+// console.log(generatePhotoId());
+// console.log(generatePhotoId());
+// console.log(generatePhotoId());
