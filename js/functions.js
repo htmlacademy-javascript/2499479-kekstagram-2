@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 //Первая функция
 
 const checkLength = (lineText, maxLength) => {
-  console.log('Длина строки: ' + lineText.length + ' символов');
+  console.log(`Длина строки: ${lineText.length} символов`);
   if (lineText.length > maxLength) {
     return console.log('Строка превышает максимальное колличество символов');
   }
@@ -24,7 +25,7 @@ console.log(testPolydromString(''));
 //Вторая функция (вариант по дз)
 
 const testPolydrom = (charsetPolydrom) => {
-  let normalPolydrom = charsetPolydrom.replaceAll(' ', '').toLowerCase();
+  const normalPolydrom = charsetPolydrom.replaceAll(' ', '').toLowerCase();
   for (let i = 0; i < normalPolydrom.length / 2; i++) {
     if (normalPolydrom[i] !== normalPolydrom[normalPolydrom.length - 1 - i]) {
       return false;
@@ -33,5 +34,5 @@ const testPolydrom = (charsetPolydrom) => {
   return true;
 };
 
-console.log(testPolydrom("Лёша на полке клопа нашёл"));
-console.log(testPolydrom("Просто текст"));
+console.log(testPolydrom('Лёша на полке клопа нашёл'));
+console.log(testPolydrom('Просто текст'));
