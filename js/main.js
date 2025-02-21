@@ -3,6 +3,6 @@ import'./util.js';
 import { renderThumbnails } from './thumbnails.js';
 
 // Генерация данных
-/* const photosData = generateData();
-photosData(); */
+const photosData = generateData();
+photosData(); 
 renderThumbnails();
