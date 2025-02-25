@@ -1,4 +1,4 @@
-//Импорт данных из файла утил
+//Импорт данных
 import { renderThumbnails } from './thumbnails.js';
 
 // Генерация данных
