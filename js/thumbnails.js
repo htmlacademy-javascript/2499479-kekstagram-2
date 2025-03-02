@@ -1,27 +1,25 @@
-import { generateData } from './util.js';
+import { openBigPicture } from './fullsize.js';
 
-const renderThumbnails = () => {
-  const picturesContainer = document.querySelector('.pictures'); //Контейнер для вставки фото
-  const pictureTemplate = document
-    .querySelector('#picture')
-    .content.querySelector('.picture'); //Шаблон элемента
+const picturesContainer = document.querySelector('.pictures'); // Блок с миниатюрами
 
-  const photos = generateData(); //Генерация массива фото
+const renderThumbnails = (photos) => {
+  const fragment = document.createDocumentFragment();
 
-  const fragment = document.createDocumentFragment(); //Используем DocumentFragment для оптимизации
+  photos.forEach((photo) => {
+    const template = document.querySelector('#picture').content.cloneNode(true);
+    const pictureElement = template.querySelector('.picture');
 
-  photos.forEach(({ url, description, likes, comments }) => {
-    const pictureElement = pictureTemplate.cloneNode(true); //Клонируем шаблон
-    const photo = pictureElement.querySelector('.picture__img');
-    photo.src = url; //Подставляем URL изображения
-    photo.alt = description; //Подставляем описание
+    pictureElement.querySelector('.picture__img').src = photo.url;
+    pictureElement.querySelector('.picture__likes').textContent = photo.likes;
+    pictureElement.querySelector('.picture__comments').textContent = photo.comments.length;
 
-    pictureElement.querySelector('.picture__likes').textContent = likes; //Выводим лайки
-    pictureElement.querySelector('.picture__comments').textContent = comments.length; // Колличество комментариев
+    // Добавляем обработчик клика
+    pictureElement.addEventListener('click', () => openBigPicture(photo));
 
-    fragment.appendChild(pictureElement); // добавляем элемент в DocumentFragment
+    fragment.appendChild(pictureElement);
   });
-  picturesContainer.appendChild(fragment); // Добавляем все элементы в контейнер
+
+  picturesContainer.appendChild(fragment);
 };
 
 export { renderThumbnails };
