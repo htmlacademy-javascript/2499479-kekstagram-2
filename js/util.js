@@ -49,4 +49,4 @@ function getRandomItem(randomElement) {
   return randomElement[Math.floor(Math.random() * randomElement.length)];
 }
 
-export { generateData, generateComments, getRandomInt, getRandomItem };
+export { generateData };
