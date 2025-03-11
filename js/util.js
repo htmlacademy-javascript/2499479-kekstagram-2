@@ -49,4 +49,6 @@ function getRandomItem(randomElement) {
   return randomElement[Math.floor(Math.random() * randomElement.length)];
 }
 
-export { generateData };
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export { generateData, isEscapeKey };
