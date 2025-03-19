@@ -2,19 +2,19 @@ import { openBigPicture } from './fullsize.js';
 
 const picturesContainer = document.querySelector('.pictures'); // Блок с миниатюрами
 
-const renderThumbnails = (photos) => {
+const renderThumbnails = (pictures) => {
   const fragment = document.createDocumentFragment();
 
-  photos.forEach((photo) => {
+  pictures.forEach((picture) => {
     const template = document.querySelector('#picture').content.cloneNode(true);
     const pictureElement = template.querySelector('.picture');
 
-    pictureElement.querySelector('.picture__img').src = photo.url;
-    pictureElement.querySelector('.picture__likes').textContent = photo.likes;
-    pictureElement.querySelector('.picture__comments').textContent = photo.comments.length;
+    pictureElement.querySelector('.picture__img').src = picture.url;
+    pictureElement.querySelector('.picture__likes').textContent = picture.likes;
+    pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
 
     // Добавляем обработчик клика
-    pictureElement.addEventListener('click', () => openBigPicture(photo));
+    pictureElement.addEventListener('click', () => openBigPicture(picture));
 
     fragment.appendChild(pictureElement);
   });

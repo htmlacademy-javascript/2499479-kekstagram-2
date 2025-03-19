@@ -1,4 +1,5 @@
-import { isEscapeKey } from './util.js';
+import { isEscapeKey, showAlert } from './util.js';
+import {sendData} from './api.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const pageBody = document.querySelector('body');
@@ -9,6 +10,13 @@ const photoEditorResetBtn = photoEditorForm.querySelector('#upload-cancel');
 
 const hashtagInput = uploadForm.querySelector('.text__hashtags');
 const commentInput = uploadForm.querySelector('.text__description');
+
+const SubmitButtonText = {
+  IDLE: 'Сохранить',
+  SENDING: 'Сохраняю...'
+};
+
+const submitButton = uploadForm.querySelector('.img-upload__submit');
 
 const onPhotoEditorResetBtnClick = () => {
   closePhotoEditor();
@@ -33,7 +41,7 @@ function closePhotoEditor () {
   uploadForm.reset();
 }
 
-export const initUploadModal = () => {
+const initUploadModal = () => {
   uploadFileControl.addEventListener('change', () => {
     photoEditorForm.classList.remove('hidden');
     pageBody.classList.add('modal-open');
@@ -47,6 +55,16 @@ const pristine = new Pristine(uploadForm,{
   errorClass: 'img-upload__field-wrapper--error',
   errorTextParent: 'img-upload__field-wrapper',
 });
+
+const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = SubmitButtonText.SENDING;
+};
+
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = SubmitButtonText.IDLE;
+};
 
 // Валидатор для хэштегов
 pristine.addValidator(hashtagInput, (value) => {
@@ -81,11 +99,23 @@ pristine.addValidator(hashtagInput, (value) => {
 // Валидатор для комментария
 pristine.addValidator(commentInput, (value) => value.length <= 140, 'Комментарий не должен превышать 140 символов!');
 
-uploadForm.addEventListener('submit', (evt) => {
-  if (!pristine.validate()) {
-    evt.preventDefault(); // Блокируем отправку при ошибках
-  }
-});
+const setUserFormSubmit = (onSuccess) => {
+  uploadForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    const isValid = pristine.validate();
+
+    if (isValid) {
+      blockSubmitButton();
+      sendData(new FormData(evt.target))
+        .then(onSuccess)
+        .catch((err) => {
+          showAlert(err.message);
+        })
+        .finally(unblockSubmitButton);
+    }
+  });
+};
 
 hashtagInput.addEventListener('keydown', (evt) => {
   if (isEscapeKey(evt)) {
@@ -99,4 +129,4 @@ commentInput.addEventListener('keydown', (evt) => {
   }
 });
 
-export { uploadForm };
+export { uploadForm, setUserFormSubmit, initUploadModal, closePhotoEditor };
