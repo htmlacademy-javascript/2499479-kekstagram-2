@@ -1,11 +1,10 @@
-import { uploadForm } from './upload-photo-form.js';
 
 // Элементы
 const imgUploadWrapper = document.querySelector('.img-upload__wrapper');
 const sliderElement = imgUploadWrapper.querySelector('.effect-level__slider');
 const effectLevelElement = imgUploadWrapper.querySelector('.effect-level');
 const effectLevelValue = imgUploadWrapper.querySelector('.effect-level__value');
-const img = uploadForm.querySelector('.img-upload__preview img');
+const img = document.querySelector('.img-upload__preview img');
 
 // Инициализация слайдера
 
@@ -26,6 +25,11 @@ noUiSlider.create(sliderElement, {
 
 // Скрываем слайдер по умолчанию
 effectLevelElement.classList.add('hidden');
+
+function sliderNone() {
+  effectLevelElement.classList.add('hidden');
+  img.style.filter = 'none';
+}
 
 // Функция для изменения эффекта
 const onEffectChange = (evt) => {
@@ -103,4 +107,4 @@ const onEffectChange = (evt) => {
   }
 };
 
-export { onEffectChange };
+export { onEffectChange, sliderNone };

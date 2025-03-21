@@ -1,15 +1,13 @@
-// Импортируем необходимые функции из других модулей
-import { uploadForm } from './upload-photo-form.js';
 // Константа, определяющая шаг изменения масштаба изображения
 const SCALE_STEP = 0.25;
 const MAX_SCALE = 1;
 const MIN_SCALE = 0.25;
 
 // Находим элементы формы загрузки изображения в DOM
-const img = uploadForm.querySelector('.img-upload__preview img'); // Превью изображения
-const smaller = uploadForm.querySelector('.scale__control--smaller'); // Кнопка уменьшения масштаба
-const bigger = uploadForm.querySelector('.scale__control--bigger'); // Кнопка увеличения масштаба
-const scaleControl = uploadForm.querySelector('.scale__control--value'); // Поле с текущим масштабом
+const img = document.querySelector('.img-upload__preview img'); // Превью изображения
+const smaller = document.querySelector('.scale__control--smaller'); // Кнопка уменьшения масштаба
+const bigger = document.querySelector('.scale__control--bigger'); // Кнопка увеличения масштаба
+const scaleControl = document.querySelector('.scale__control--value'); // Поле с текущим масштабом
 
 
 // Переменная для хранения текущего масштаба изображения (по умолчанию 1)

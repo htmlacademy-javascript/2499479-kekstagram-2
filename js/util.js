@@ -1,76 +1,86 @@
-import {getData} from './data.js';
+// Блок с сообщением об ошибке
+const alertContainerTemplate = document.querySelector('#error')
+  .content
+  .querySelector('.error');
 
-const { NAMES, MESSAGES, DESCRIPTIONS } = getData();
-const ALERT_SHOW_TIME = 5000;
+// Блок с сообщением об успехе
+const messageContainerTemplate = document.querySelector('#success')
+  .content
+  .querySelector('.success');
 
-const showAlert = (message) => {
-  const alertContainer = document.createElement('div');
-  alertContainer.style.zIndex = '100';
-  alertContainer.style.position = 'absolute';
-  alertContainer.style.left = '0';
-  alertContainer.style.top = '0';
-  alertContainer.style.right = '0';
-  alertContainer.style.padding = '10px 3px';
-  alertContainer.style.fontSize = '30px';
-  alertContainer.style.textAlign = 'center';
-  alertContainer.style.backgroundColor = 'red';
+const isEscapeKey = (evt) => evt.key === 'Escape';
+// Сообщение с ошибкой
+const showAlert = () => {
+  const alertContainer = alertContainerTemplate.cloneNode(true);
+  const alertCloseButton = alertContainer.querySelector('.error__button');
 
-  alertContainer.textContent = message;
+  alertContainer.style.zIndex = 100;
 
   document.body.append(alertContainer);
 
-  setTimeout(() => {
+  const onPopupEscKeydown = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      // eslint-disable-next-line no-use-before-define
+      onCloseAlertClick();
+    }
+  };
+
+  const onOutBoxClick = (evt) => {
+    if (!alertContainer.querySelector('.error__inner').contains(evt.target)) {
+      evt.preventDefault();
+      // eslint-disable-next-line no-use-before-define
+      onCloseAlertClick();
+    }
+  };
+
+  const onCloseAlertClick = () => {
     alertContainer.remove();
-  }, ALERT_SHOW_TIME);
+    alertCloseButton.removeEventListener('click', onCloseAlertClick);
+    document.removeEventListener('keydown', onPopupEscKeydown);
+    document.removeEventListener('click', onOutBoxClick);
+  };
+
+  alertCloseButton.addEventListener('click', onCloseAlertClick);
+  document.addEventListener('keydown', onPopupEscKeydown);
+  document.addEventListener('click', onOutBoxClick);
 };
 
-//Функция для генерации случайных данных
-function generateData() {
-  const photos = [];
+// Сообщение об успешной отправке
+const showMessage = () => {
+  const messageContainer = messageContainerTemplate.cloneNode(true);
+  const messageCloseButton = messageContainer.querySelector('.success__button');
 
-  for (let i = 1; i <= 25; i++) {
-    //Генерация фотографии
-    const photo = {
-      id: i,
-      url: `photos/${i}.jpg`,
-      description: getRandomItem(DESCRIPTIONS),
-      likes: getRandomInt(15, 200),
-      comments: generateComments()
-    };
-    photos.push(photo);
-  }
-  return photos;
-}
+  messageContainer.style.zIndex = 100;
 
-//Функция для генерации случайных комментариев
-function generateComments() {
-  const numComments = getRandomInt(0, 30);
-  const comments = [];
+  document.body.append(messageContainer);
 
-  for (let i = 0; i < numComments; i++) {
-    const comment = {
-      id: getRandomInt(1, 1000),
-      avatar: `img/avatar-${getRandomInt(1, 6)}.svg`,
-      message: getRandomItem(MESSAGES),
-      name: getRandomItem(NAMES)
-    };
-    comments.push(comment);
-  }
+  const onPopupEscKeydown = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      // eslint-disable-next-line no-use-before-define
+      onCloseMessageClick();
+    }
+  };
 
-  return comments;
-}
+  const onOutBoxClick = (evt) => {
+    if (!messageContainer.querySelector('.success__inner').contains(evt.target)) {
+      evt.preventDefault();
+      // eslint-disable-next-line no-use-before-define
+      onCloseMessageClick();
+    }
+  };
 
+  const onCloseMessageClick = () => {
+    messageContainer.remove();
+    messageCloseButton.removeEventListener('click', onCloseMessageClick);
+    document.removeEventListener('keydown', onPopupEscKeydown);
+    document.removeEventListener('click', onOutBoxClick);
+  };
 
-// Функция для генерации случайного числа в диапазоне
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+  messageCloseButton.addEventListener('click', onCloseMessageClick);
+  document.addEventListener('keydown', onPopupEscKeydown);
+  document.addEventListener('click', onOutBoxClick);
+};
 
-// Функция для выбора случайного элемента из массива
-function getRandomItem(randomElement) {
-  return randomElement[Math.floor(Math.random() * randomElement.length)];
-}
-
-const isEscapeKey = (evt) => evt.key === 'Escape';
-
-export { generateData, isEscapeKey, showAlert };
+export { isEscapeKey, showAlert, showMessage};

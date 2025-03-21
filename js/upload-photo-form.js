@@ -1,5 +1,6 @@
-import { isEscapeKey, showAlert } from './util.js';
+import { isEscapeKey, showAlert, showMessage } from './util.js';
 import { sendData } from './api.js';
+import { sliderNone } from './slider-effect.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const pageBody = document.querySelector('body');
@@ -62,6 +63,7 @@ function closePhotoEditor() {
   document.removeEventListener('keydown', onDocumentKeydown);
   uploadForm.reset();
   pristine.reset();
+  sliderNone();
   updateSubmitButtonState(); // Обновляем состояние кнопки при закрытии формы
 }
 
@@ -108,23 +110,38 @@ pristine.addValidator(hashtagInput, (value) => {
 // Валидатор для комментария
 pristine.addValidator(commentInput, (value) => value.length <= 140, 'Комментарий не должен превышать 140 символов!');
 
+let isFormSubmitting = false;
+
 const setUserFormSubmit = (onSuccess) => {
   uploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
 
+    if (isFormSubmitting) {
+      return;
+    }
+
     const isValid = pristine.validate();
 
     if (isValid) {
+      isFormSubmitting = true;
       blockSubmitButton();
       sendData(new FormData(evt.target))
         .then(onSuccess)
         .catch((err) => {
           showAlert(err.message);
         })
-        .finally(unblockSubmitButton);
+        .finally(() => {
+          unblockSubmitButton();
+          isFormSubmitting = false;
+        });
     }
   });
 };
+
+setUserFormSubmit(() => {
+  showMessage(); // Показываем сообщение об успехе
+  closePhotoEditor(); // Закрываем форму редактирования
+});
 
 hashtagInput.addEventListener('input', updateSubmitButtonState); // Обновляем состояние кнопки при изменении хэштегов
 commentInput.addEventListener('input', updateSubmitButtonState); // Обновляем состояние кнопки при изменении комментария
@@ -141,4 +158,4 @@ commentInput.addEventListener('keydown', (evt) => {
   }
 });
 
-export { uploadForm, setUserFormSubmit, initUploadModal, closePhotoEditor };
+export { setUserFormSubmit, initUploadModal, closePhotoEditor };
