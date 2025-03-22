@@ -4,7 +4,7 @@ import { initUploadModal, setUserFormSubmit, closePhotoEditor } from './upload-p
 import { onSmallerClick, onBiggerClick } from './scale.js';
 import { onEffectChange } from './slider-effect.js';
 import { getData } from './api.js';
-import { showMessage } from './util.js'; // Добавлен импорт showMessage
+import { showMessage } from './util.js';
 
 // Отрисовываем миниатюры
 getData()
@@ -15,17 +15,17 @@ getData()
     throw new Error(error);
   });
 
-// Инициализация формы загрузки фото
+//форма загрузки фото
 initUploadModal();
 
-// Инициализация масштабирования изображения
+//масштабирования изображения
 onSmallerClick();
 onBiggerClick();
 
-// Инициализация эффектов изображения
+//эффекты для изображения
 document.querySelector('.effects__list').addEventListener('change', onEffectChange);
 
-// Инициализация отправки формы
+//отправка формы
 setUserFormSubmit(() => {
   showMessage(); // Показываем сообщение об успехе
   closePhotoEditor(); // Закрываем форму редактирования

@@ -21,7 +21,6 @@ const showAlert = () => {
   const onPopupEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
-      // eslint-disable-next-line no-use-before-define
       onCloseAlertClick();
     }
   };
@@ -29,17 +28,16 @@ const showAlert = () => {
   const onOutBoxClick = (evt) => {
     if (!alertContainer.querySelector('.error__inner').contains(evt.target)) {
       evt.preventDefault();
-      // eslint-disable-next-line no-use-before-define
       onCloseAlertClick();
     }
   };
 
-  const onCloseAlertClick = () => {
+  function onCloseAlertClick() {
     alertContainer.remove();
     alertCloseButton.removeEventListener('click', onCloseAlertClick);
     document.removeEventListener('keydown', onPopupEscKeydown);
     document.removeEventListener('click', onOutBoxClick);
-  };
+  }
 
   alertCloseButton.addEventListener('click', onCloseAlertClick);
   document.addEventListener('keydown', onPopupEscKeydown);
@@ -58,7 +56,6 @@ const showMessage = () => {
   const onPopupEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
-      // eslint-disable-next-line no-use-before-define
       onCloseMessageClick();
     }
   };
@@ -66,17 +63,16 @@ const showMessage = () => {
   const onOutBoxClick = (evt) => {
     if (!messageContainer.querySelector('.success__inner').contains(evt.target)) {
       evt.preventDefault();
-      // eslint-disable-next-line no-use-before-define
       onCloseMessageClick();
     }
   };
 
-  const onCloseMessageClick = () => {
+  function onCloseMessageClick() {
     messageContainer.remove();
     messageCloseButton.removeEventListener('click', onCloseMessageClick);
     document.removeEventListener('keydown', onPopupEscKeydown);
     document.removeEventListener('click', onOutBoxClick);
-  };
+  }
 
   messageCloseButton.addEventListener('click', onCloseMessageClick);
   document.addEventListener('keydown', onPopupEscKeydown);
