@@ -1,54 +1,82 @@
-import {getData} from './data.js';
+// Блок с сообщением об ошибке
+const alertContainerTemplate = document.querySelector('#error')
+  .content
+  .querySelector('.error');
 
-const { NAMES, MESSAGES, DESCRIPTIONS } = getData();
-
-//Функция для генерации случайных данных
-function generateData() {
-  const photos = [];
-
-  for (let i = 1; i <= 25; i++) {
-    //Генерация фотографии
-    const photo = {
-      id: i,
-      url: `photos/${i}.jpg`,
-      description: getRandomItem(DESCRIPTIONS),
-      likes: getRandomInt(15, 200),
-      comments: generateComments()
-    };
-    photos.push(photo);
-  }
-  return photos;
-}
-
-//Функция для генерации случайных комментариев
-function generateComments() {
-  const numComments = getRandomInt(0, 30);
-  const comments = [];
-
-  for (let i = 0; i < numComments; i++) {
-    const comment = {
-      id: getRandomInt(1, 1000),
-      avatar: `img/avatar-${getRandomInt(1, 6)}.svg`,
-      message: getRandomItem(MESSAGES),
-      name: getRandomItem(NAMES)
-    };
-    comments.push(comment);
-  }
-
-  return comments;
-}
-
-
-// Функция для генерации случайного числа в диапазоне
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Функция для выбора случайного элемента из массива
-function getRandomItem(randomElement) {
-  return randomElement[Math.floor(Math.random() * randomElement.length)];
-}
+// Блок с сообщением об успехе
+const messageContainerTemplate = document.querySelector('#success')
+  .content
+  .querySelector('.success');
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
+// Сообщение с ошибкой
+const showAlert = () => {
+  const alertContainer = alertContainerTemplate.cloneNode(true);
+  const alertCloseButton = alertContainer.querySelector('.error__button');
 
-export { generateData, isEscapeKey };
+  alertContainer.style.zIndex = 100;
+
+  document.body.append(alertContainer);
+
+  const onPopupEscKeydown = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      onCloseAlertClick();
+    }
+  };
+
+  const onOutBoxClick = (evt) => {
+    if (!alertContainer.querySelector('.error__inner').contains(evt.target)) {
+      evt.preventDefault();
+      onCloseAlertClick();
+    }
+  };
+
+  function onCloseAlertClick() {
+    alertContainer.remove();
+    alertCloseButton.removeEventListener('click', onCloseAlertClick);
+    document.removeEventListener('keydown', onPopupEscKeydown);
+    document.removeEventListener('click', onOutBoxClick);
+  }
+
+  alertCloseButton.addEventListener('click', onCloseAlertClick);
+  document.addEventListener('keydown', onPopupEscKeydown);
+  document.addEventListener('click', onOutBoxClick);
+};
+
+// Сообщение об успешной отправке
+const showMessage = () => {
+  const messageContainer = messageContainerTemplate.cloneNode(true);
+  const messageCloseButton = messageContainer.querySelector('.success__button');
+
+  messageContainer.style.zIndex = 100;
+
+  document.body.append(messageContainer);
+
+  const onPopupEscKeydown = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      onCloseMessageClick();
+    }
+  };
+
+  const onOutBoxClick = (evt) => {
+    if (!messageContainer.querySelector('.success__inner').contains(evt.target)) {
+      evt.preventDefault();
+      onCloseMessageClick();
+    }
+  };
+
+  function onCloseMessageClick() {
+    messageContainer.remove();
+    messageCloseButton.removeEventListener('click', onCloseMessageClick);
+    document.removeEventListener('keydown', onPopupEscKeydown);
+    document.removeEventListener('click', onOutBoxClick);
+  }
+
+  messageCloseButton.addEventListener('click', onCloseMessageClick);
+  document.addEventListener('keydown', onPopupEscKeydown);
+  document.addEventListener('click', onOutBoxClick);
+};
+
+export { isEscapeKey, showAlert, showMessage};
