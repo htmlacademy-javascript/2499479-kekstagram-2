@@ -5,6 +5,32 @@ import { onSmallerClick, onBiggerClick } from './scale.js';
 import { onEffectChange } from './slider-effect.js';
 import { getData } from './api.js';
 import { showMessage } from './util.js';
+import './filters.js';
+import {debounce} from './debounce.js';
+import {sortDefaultClick, sortRandomClick, sortDiscussedClick} from './filters.js';
+import {renderPictures} from './pictures.js';
+
+const RERENDER_DELAY = 500; // Задержка перерисовки изображений
+
+getData((pictures) => {
+  renderPictures(pictures);
+  initUploadModal(pictures);
+
+  sortDefaultClick(debounce(
+    () => renderPictures(pictures),
+    RERENDER_DELAY,
+  ));
+
+  sortRandomClick(debounce(
+    () => renderPictures(pictures),
+    RERENDER_DELAY,
+  ));
+
+  sortDiscussedClick(debounce(
+    () => renderPictures(pictures),
+    RERENDER_DELAY,
+  ));
+});
 
 // Отрисовываем миниатюры
 getData()
