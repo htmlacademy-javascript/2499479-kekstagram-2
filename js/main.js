@@ -1,32 +1,32 @@
-// Импорт данных
 import { renderThumbnails } from './thumbnails.js';
 import { initUploadModal, setUserFormSubmit, closePhotoEditor } from './upload-photo-form.js';
 import { onSmallerClick, onBiggerClick } from './scale.js';
 import { onEffectChange } from './slider-effect.js';
 import { getData } from './api.js';
 import { showMessage } from './util.js';
+import { initFilters } from './filters.js';
 
-// Отрисовываем миниатюры
+// Получаем данные с сервера и инициализируем приложение
 getData()
   .then((pictures) => {
-    renderThumbnails(pictures); // Передаем данные с сервера в функцию отрисовки
+    // Отрисовываем миниатюры
+    renderThumbnails(pictures);
+    // Сортировка миниатюр
+    initFilters(pictures);
+
   })
   .catch((error) => {
-    throw new Error(error);
+    showMessage(error, 'Не удалось загрузить фотографии');
   });
 
-//форма загрузки фото
-initUploadModal();
+initUploadModal(); // Форма загрузки фото
+onSmallerClick(); // Масштабирование изображения -
+onBiggerClick(); // Масштабирование изображения +
 
-//масштабирования изображения
-onSmallerClick();
-onBiggerClick();
+document.querySelector('.effects__list').addEventListener('change', onEffectChange); // Эффекты для изображения
 
-//эффекты для изображения
-document.querySelector('.effects__list').addEventListener('change', onEffectChange);
-
-//отправка формы
+// Отправка формы
 setUserFormSubmit(() => {
-  showMessage(); // Показываем сообщение об успехе
+  showMessage('success'); // Показываем сообщение об успехе
   closePhotoEditor(); // Закрываем форму редактирования
 });

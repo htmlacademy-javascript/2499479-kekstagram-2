@@ -22,4 +22,9 @@ const renderThumbnails = (pictures) => {
   picturesContainer.appendChild(fragment);
 };
 
-export { renderThumbnails };
+const clearPictures = () => {
+  const pictures = picturesContainer.querySelectorAll('.picture'); // Ищите по классу ваших миниатюр
+  pictures.forEach((picture) => picture.remove());
+};
+
+export { renderThumbnails, clearPictures };
