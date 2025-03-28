@@ -9,6 +9,9 @@ const uploadFileControl = uploadForm.querySelector('#upload-file');
 const photoEditorForm = uploadForm.querySelector('.img-upload__overlay');
 const photoEditorResetBtn = photoEditorForm.querySelector('#upload-cancel');
 
+const imagePreview = photoEditorForm.querySelector('.img-upload__preview img');
+const effectsPreviews = photoEditorForm.querySelectorAll('.effects__preview');
+
 const submitButton = uploadForm.querySelector('.img-upload__submit');
 
 const pristine = new Pristine(uploadForm, {
@@ -17,10 +20,15 @@ const pristine = new Pristine(uploadForm, {
   errorTextParent: 'img-upload__field-wrapper',
 });
 
-// Функция для блокировки/разблокировки кнопки в зависимости от валидации
+// Функция для проверки формата изображения
+const isValidImageFormat = (fileName) => {
+  const allowedFormats = ['.jpg', '.jpeg', '.png'];
+  return allowedFormats.some((format) => fileName.toLowerCase().endsWith(format));
+};
+
 const updateSubmitButtonState = () => {
-  const isValid = pristine.validate(); // Проверяем валидацию формы
-  submitButton.disabled = !isValid; // Блокируем кнопку, если есть ошибки
+  const isValid = pristine.validate();
+  submitButton.disabled = !isValid;
 };
 
 const hashtagInput = uploadForm.querySelector('.text__hashtags');
@@ -47,13 +55,39 @@ const onDocumentKeydown = (evt) => {
   }
 };
 
+const showUploadedImage = () => {
+  const file = uploadFileControl.files[0];
+  if (!file) {
+    return;
+  }
+
+  // Проверяем формат файла
+  if (!isValidImageFormat(file.name)) {
+    showAlert('Допустимые форматы изображений: JPG, JPEG, PNG');
+    uploadForm.reset(); // Сбрасываем форму, если формат не подходит
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.addEventListener('load', () => {
+    imagePreview.src = reader.result;
+    effectsPreviews.forEach((preview) => {
+      preview.style.backgroundImage = `url(${reader.result})`;
+    });
+  });
+
+  reader.readAsDataURL(file);
+};
+
 const initUploadModal = () => {
   uploadFileControl.addEventListener('change', () => {
+    showUploadedImage();
     photoEditorForm.classList.remove('hidden');
     pageBody.classList.add('modal-open');
     photoEditorResetBtn.addEventListener('click', onPhotoEditorResetBtnClick);
     document.addEventListener('keydown', onDocumentKeydown);
-    updateSubmitButtonState(); // Проверяем валидацию при открытии формы
+    updateSubmitButtonState();
   });
 };
 
@@ -64,7 +98,7 @@ function closePhotoEditor() {
   uploadForm.reset();
   pristine.reset();
   sliderNone();
-  updateSubmitButtonState(); // Обновляем состояние кнопки при закрытии формы
+  updateSubmitButtonState();
 }
 
 const blockSubmitButton = () => {
@@ -86,20 +120,16 @@ pristine.addValidator(hashtagInput, (value) => {
   const hashtags = value.toLowerCase().trim().split(/\s+/);
   const hashtagPattern = /^#[a-zа-яё0-9]{1,19}$/i;
 
-  // Проверка на максимальное количество хэштегов
   if (hashtags.length > 5) {
     return false;
   }
 
-  // Проверка на уникальность хэштегов
   const uniqueHashtags = new Set(hashtags);
   if (uniqueHashtags.size !== hashtags.length) {
     return false;
   }
 
-  // Проверка формата каждого хэштега
   return hashtags.every((tag) => {
-    // Проверка на пустой хэштег (только решётка)
     if (tag === '#') {
       return false;
     }
@@ -139,12 +169,12 @@ const setUserFormSubmit = (onSuccess) => {
 };
 
 setUserFormSubmit(() => {
-  showMessage(); // Показываем сообщение об успехе
-  closePhotoEditor(); // Закрываем форму редактирования
+  showMessage();
+  closePhotoEditor();
 });
 
-hashtagInput.addEventListener('input', updateSubmitButtonState); // Обновляем состояние кнопки при изменении хэштегов
-commentInput.addEventListener('input', updateSubmitButtonState); // Обновляем состояние кнопки при изменении комментария
+hashtagInput.addEventListener('input', updateSubmitButtonState);
+commentInput.addEventListener('input', updateSubmitButtonState);
 
 hashtagInput.addEventListener('keydown', (evt) => {
   if (isEscapeKey(evt)) {
