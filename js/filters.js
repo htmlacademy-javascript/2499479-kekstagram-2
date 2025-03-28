@@ -1,61 +1,55 @@
-const imgFilters = document.querySelector('.img-filters');
+import { renderThumbnails, clearPictures } from './thumbnails.js';
+import { debounce } from './debounce.js';
 
-const sortDefault = imgFilters.querySelector('#filter-default'); // Кнопка сортировки «по умолчанию»
-const sortRandom = imgFilters.querySelector('#filter-random'); // Кнопка сортировки «случайные»
-const sortDiscussed = imgFilters.querySelector('#filter-discussed'); // Кнопка сортировки «обсуждаемые»
+// Задержка перерисовки изображений
+const RERENDER_DELAY = 500;
 
-const sortInput = imgFilters.querySelector('#sort-input'); // Скрытый инпут
+//функция сортировки
+const initFilters = (pictures) => {
+  const sortBlock = document.querySelector('.img-filters');
 
-// По умолчанию — фотографии в изначальном порядке с сервера.
-const sortDefaultClick = (cb) => {
-  sortDefault.addEventListener('click', () => {
-    sortDefault.classList.add('img-filters__button--active');
-    sortRandom.classList.remove('img-filters__button--active');
-    sortDiscussed.classList.remove('img-filters__button--active');
+  // Показываем блок фильтров (если скрыт)
+  sortBlock.classList.remove('img-filters--inactive');
+  // Проверка и отображение блока
+  if (!sortBlock) {
+    throw new Error('Блок фильтров не найден!');
+  }
+  sortBlock.classList.remove('img-filters--inactive'); // Показываем блок с кнопками сортировки
 
-    sortInput.value = 'default';
-    cb();
+  // Элементы кнопок
+  const sortDefault = sortBlock.querySelector('#filter-default');
+  const sortRandom = sortBlock.querySelector('#filter-random');
+  const sortDiscussed = sortBlock.querySelector('#filter-discussed');
+
+  // Функция активации кнопки
+  const setActiveButton = (activeButton) => {
+    [sortDefault, sortRandom, sortDiscussed].forEach((button) => {
+      button?.classList.remove('img-filters__button--active');
+    });
+    activeButton?.classList.add('img-filters__button--active');
+  };
+
+  // Обработчики (с дебаунсом и очисткой)
+
+  const debouncedRender = debounce((filteredPictures) => {
+    clearPictures();
+    renderThumbnails(filteredPictures);
+  }, RERENDER_DELAY);
+
+  sortDefault?.addEventListener('click', () => {
+    setActiveButton(sortDefault);
+    debouncedRender([...pictures]); // Исходный порядок
+  });
+
+  sortRandom?.addEventListener('click', () => {
+    setActiveButton(sortRandom);
+    debouncedRender([...pictures].sort(() => Math.random() - 0.5).slice(0, 10)); // 10 случайных
+  });
+
+  sortDiscussed?.addEventListener('click', () => {
+    setActiveButton(sortDiscussed);
+    debouncedRender([...pictures].sort((a, b) => b.comments.length - a.comments.length)); // По комментариям
   });
 };
 
-// Случайные — 10 случайных, не повторяющихся фотографий.
-const sortRandomClick = (cb) => {
-  sortRandom.addEventListener('click', () => {
-    sortDefault.classList.remove('img-filters__button--active');
-    sortRandom.classList.add('img-filters__button--active');
-    sortDiscussed.classList.remove('img-filters__button--active');
-
-    sortInput.value = 'random';
-    cb();
-  });
-};
-
-// Обсуждаемые — фотографии, отсортированные в порядке убывания количества комментариев.
-const sortDiscussedClick = (cb) => {
-  sortDiscussed.addEventListener('click', () => {
-    sortDefault.classList.remove('img-filters__button--active');
-    sortRandom.classList.remove('img-filters__button--active');
-    sortDiscussed.classList.add('img-filters__button--active');
-
-    sortInput.value = 'discussed';
-    cb();
-  });
-};
-
-// Функция сортировки изображений по id (по умолчанию)
-const comparePicturesIds = (pictureA, pictureB) => {
-  const rankIdA = pictureA.id;
-  const rankIdB = pictureB.id;
-
-  return rankIdA - rankIdB;
-};
-
-// Функция сортировки изображений по комментариям (обсуждаемые)
-const comparePicturesComments = (pictureA, pictureB) => {
-  const rankCommentsA = pictureA.comments.length;
-  const rankCommentsB = pictureB.comments.length;
-
-  return rankCommentsB - rankCommentsA;
-};
-
-export {imgFilters, sortInput, comparePicturesIds, comparePicturesComments, sortDefaultClick, sortRandomClick, sortDiscussedClick};
+export {initFilters};
