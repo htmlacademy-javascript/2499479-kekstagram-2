@@ -1,6 +1,7 @@
 import { isEscapeKey, showAlert, showMessage } from './util.js';
 import { sendData } from './api.js';
 import { sliderNone } from './slider-effect.js';
+import { fileUpload } from './image-upload.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const pageBody = document.querySelector('body');
@@ -20,12 +21,7 @@ const pristine = new Pristine(uploadForm, {
   errorTextParent: 'img-upload__field-wrapper',
 });
 
-// Функция для проверки формата изображения
-const isValidImageFormat = (fileName) => {
-  const allowedFormats = ['.jpg', '.jpeg', '.png'];
-  return allowedFormats.some((format) => fileName.toLowerCase().endsWith(format));
-};
-
+// Функция обновления состояния кнопки отправки
 const updateSubmitButtonState = () => {
   const isValid = pristine.validate();
   submitButton.disabled = !isValid;
@@ -39,10 +35,12 @@ const SubmitButtonText = {
   SENDING: 'Сохраняю...'
 };
 
+// Обработчик клика по кнопке закрытия редактора
 const onPhotoEditorResetBtnClick = () => {
   closePhotoEditor();
 };
 
+// Обработчик закрытия редактора по нажатию клавиши Escape
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
@@ -55,34 +53,10 @@ const onDocumentKeydown = (evt) => {
   }
 };
 
-const showUploadedImage = () => {
-  const file = uploadFileControl.files[0];
-  if (!file) {
-    return;
-  }
-
-  // Проверяем формат файла
-  if (!isValidImageFormat(file.name)) {
-    showAlert('Допустимые форматы изображений: JPG, JPEG, PNG');
-    uploadForm.reset(); // Сбрасываем форму, если формат не подходит
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.addEventListener('load', () => {
-    imagePreview.src = reader.result;
-    effectsPreviews.forEach((preview) => {
-      preview.style.backgroundImage = `url(${reader.result})`;
-    });
-  });
-
-  reader.readAsDataURL(file);
-};
-
+// Инициализация модального окна загрузки фото
 const initUploadModal = () => {
   uploadFileControl.addEventListener('change', () => {
-    showUploadedImage();
+    fileUpload(uploadFileControl, imagePreview, effectsPreviews, showAlert);
     photoEditorForm.classList.remove('hidden');
     pageBody.classList.add('modal-open');
     photoEditorResetBtn.addEventListener('click', onPhotoEditorResetBtnClick);
@@ -91,6 +65,7 @@ const initUploadModal = () => {
   });
 };
 
+// Закрытие редактора фото
 function closePhotoEditor() {
   photoEditorForm.classList.add('hidden');
   pageBody.classList.remove('modal-open');
@@ -101,11 +76,13 @@ function closePhotoEditor() {
   updateSubmitButtonState();
 }
 
+// Блокировка кнопки отправки
 const blockSubmitButton = () => {
   submitButton.disabled = true;
   submitButton.textContent = SubmitButtonText.SENDING;
 };
 
+// Разблокировка кнопки отправки
 const unblockSubmitButton = () => {
   submitButton.disabled = false;
   submitButton.textContent = SubmitButtonText.IDLE;
@@ -137,11 +114,13 @@ pristine.addValidator(hashtagInput, (value) => {
   });
 }, 'Некорректные хэштеги! Хэштег должен начинаться с #, быть уникальным, содержать до 19 символов после решётки (буквы, цифры), максимум 5 хэштегов. Дубликаты запрещены.');
 
+
 // Валидатор для комментария
 pristine.addValidator(commentInput, (value) => value.length <= 140, 'Комментарий не должен превышать 140 символов!');
 
 let isFormSubmitting = false;
 
+// Функция обработки отправки формы
 const setUserFormSubmit = (onSuccess) => {
   uploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
@@ -168,14 +147,17 @@ const setUserFormSubmit = (onSuccess) => {
   });
 };
 
+// Настройка обработчика успешной отправки формы
 setUserFormSubmit(() => {
   showMessage();
   closePhotoEditor();
 });
 
+// Обновление состояния кнопки при изменении полей ввода
 hashtagInput.addEventListener('input', updateSubmitButtonState);
 commentInput.addEventListener('input', updateSubmitButtonState);
 
+// Запрет закрытия окна при вводе текста в хэштеги или комментарий
 hashtagInput.addEventListener('keydown', (evt) => {
   if (isEscapeKey(evt)) {
     evt.stopPropagation();
