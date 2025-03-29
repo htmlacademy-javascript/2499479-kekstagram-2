@@ -19,6 +19,8 @@ const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'img-upload__field-wrapper--error',
   errorTextParent: 'img-upload__field-wrapper',
+  errorTextClass: 'pristine-error',
+  errorTextTag: 'div',
 });
 
 // Функция обновления состояния кнопки отправки
@@ -56,8 +58,7 @@ const onDocumentKeydown = (evt) => {
 // Инициализация модального окна загрузки фото
 const initUploadModal = () => {
   uploadFileControl.addEventListener('change', () => {
-
-    if (fileUpload(uploadFileControl, imagePreview, effectsPreviews, showAlert)){
+    if (fileUpload(uploadFileControl, imagePreview, effectsPreviews, showAlert)) {
       photoEditorForm.classList.remove('hidden');
     }
     pageBody.classList.add('modal-open');
@@ -90,32 +91,72 @@ const unblockSubmitButton = () => {
   submitButton.textContent = SubmitButtonText.IDLE;
 };
 
-// Валидатор для хэштегов
+// Валидатор для хэштегов с подробными сообщениями об ошибках
 pristine.addValidator(hashtagInput, (value) => {
-  if (!value || !value.trim()) {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
     return true;
   }
 
-  const hashtags = value.toLowerCase().trim().split(/\s+/);
-  const hashtagPattern = /^#[a-zа-яё0-9]{1,19}$/i;
+  const hashtags = trimmedValue.split(/\s+/).filter((item) => item !== '');
+  const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
 
   if (hashtags.length > 5) {
     return false;
   }
 
-  const uniqueHashtags = new Set(hashtags);
-  if (uniqueHashtags.size !== hashtags.length) {
+  const lowerCaseTags = hashtags.map((item) => item.toLowerCase());
+  const uniqueTags = new Set(lowerCaseTags);
+  if (uniqueTags.size !== hashtags.length) {
     return false;
   }
 
-  return hashtags.every((tag) => {
-    if (tag === '#') {
+  return hashtags.every((hashtag) => {
+    if (hashtag === '#') {
       return false;
     }
-    return hashtagPattern.test(tag);
+    return hashtagRegex.test(hashtag);
   });
-}, 'Некорректные хэштеги! Хэштег должен начинаться с #, быть уникальным, содержать до 19 символов после решётки (буквы, цифры), максимум 5 хэштегов. Дубликаты запрещены.');
+}, (value) => {
+  const trimmedValue = value.trim();
 
+  if (!trimmedValue) {
+    return '';
+  }
+
+  const hashtags = trimmedValue.split(/\s+/).filter((item) => item !== '');
+
+  if (hashtags.length > 5) {
+    return 'Нельзя указать больше 5 хэштегов!';
+  }
+
+  const lowerCaseTags = hashtags.map((item) => item.toLowerCase());
+  const uniqueTags = new Set(lowerCaseTags);
+  if (uniqueTags.size !== hashtags.length) {
+    return 'Хэштеги не должны повторяться!';
+  }
+
+  for (const hashtag of hashtags) {
+    if (hashtag === '#') {
+      return 'Хэштег не может быть только #!';
+    }
+
+    if (hashtag[0] !== '#') {
+      return 'Хэштег должен начинаться с #!';
+    }
+
+    if (hashtag.length > 20) {
+      return 'Максимальная длина хэштега - 20 символов!';
+    }
+
+    if (!/^#[a-zа-яё0-9]{1,19}$/i.test(hashtag)) {
+      return 'Недопустимые символы в хэштеге!';
+    }
+  }
+
+  return '';
+});
 
 // Валидатор для комментария
 pristine.addValidator(commentInput, (value) => value.length <= 140, 'Комментарий не должен превышать 140 символов!');
@@ -145,6 +186,9 @@ const setUserFormSubmit = (onSuccess) => {
           unblockSubmitButton();
           isFormSubmitting = false;
         });
+    } else {
+      // Принудительно показываем все ошибки при попытке отправки
+      updateSubmitButtonState();
     }
   });
 };
@@ -155,9 +199,26 @@ setUserFormSubmit(() => {
   closePhotoEditor();
 });
 
-// Обновление состояния кнопки при изменении полей ввода
-hashtagInput.addEventListener('input', updateSubmitButtonState);
-commentInput.addEventListener('input', updateSubmitButtonState);
+// Обновление состояния при изменении полей ввода
+hashtagInput.addEventListener('input', () => {
+  pristine.validate(hashtagInput);
+  updateSubmitButtonState();
+
+  // Принудительно показываем ошибку, если она есть
+  const errorElement = hashtagInput
+    .closest('.img-upload__field-wrapper')
+    .querySelector('.pristine-error');
+
+  if (errorElement) {
+    errorElement.style.display = 'block';
+    errorElement.style.visibility = 'visible';
+  }
+});
+
+commentInput.addEventListener('input', () => {
+  pristine.validate(commentInput);
+  updateSubmitButtonState();
+});
 
 // Запрет закрытия окна при вводе текста в хэштеги или комментарий
 hashtagInput.addEventListener('keydown', (evt) => {
