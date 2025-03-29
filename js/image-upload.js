@@ -1,18 +1,3 @@
-// const FILE_TYPES = ['jpg', 'jpeg', 'png'];
-
-// const fileChooser = document.querySelector('.img-upload__start input[type=file]');
-// const preview = document.querySelector('.pictures');
-
-// fileChooser.addEventListener('change', () => {
-//   const file = fileChooser.files[0];
-//   const fileName = file.name.toLowerCase();
-
-//   const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
-//   if (matches) {
-//     preview.src = URL.createObjectURL(file);
-//   }
-// });
-
 const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 const isValidImageFormat = (file) => {
@@ -29,7 +14,7 @@ const fileUpload = (fileInput, previewImage, effectsPreviews, onError) => {
   if (!isValidImageFormat(file)) {
     onError('Допустимые форматы изображений: JPG, JPEG, PNG');
     fileInput.value = ''; // Очищаем поле загрузки
-    return;
+    return false;
   }
 
   const fileURL = URL.createObjectURL(file);
@@ -38,6 +23,7 @@ const fileUpload = (fileInput, previewImage, effectsPreviews, onError) => {
   effectsPreviews.forEach((preview) => {
     preview.style.backgroundImage = `url(${fileURL})`;
   });
+  return true;
 };
 
 export { fileUpload };

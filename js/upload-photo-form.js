@@ -1,4 +1,4 @@
-import { isEscapeKey, showAlert, showMessage } from './util.js';
+import { isEscapeKey, showRedAlert, showAlert, showMessage } from './util.js';
 import { sendData } from './api.js';
 import { sliderNone } from './slider-effect.js';
 import { fileUpload } from './image-upload.js';
@@ -56,8 +56,10 @@ const onDocumentKeydown = (evt) => {
 // Инициализация модального окна загрузки фото
 const initUploadModal = () => {
   uploadFileControl.addEventListener('change', () => {
-    fileUpload(uploadFileControl, imagePreview, effectsPreviews, showAlert);
-    photoEditorForm.classList.remove('hidden');
+
+    if (fileUpload(uploadFileControl, imagePreview, effectsPreviews, showAlert)){
+      photoEditorForm.classList.remove('hidden');
+    }
     pageBody.classList.add('modal-open');
     photoEditorResetBtn.addEventListener('click', onPhotoEditorResetBtnClick);
     document.addEventListener('keydown', onDocumentKeydown);
@@ -137,7 +139,7 @@ const setUserFormSubmit = (onSuccess) => {
       sendData(new FormData(evt.target))
         .then(onSuccess)
         .catch((err) => {
-          showAlert(err.message);
+          showRedAlert(err.message);
         })
         .finally(() => {
           unblockSubmitButton();

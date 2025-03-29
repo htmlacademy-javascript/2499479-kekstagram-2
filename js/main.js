@@ -3,30 +3,33 @@ import { initUploadModal, setUserFormSubmit, closePhotoEditor } from './upload-p
 import { onSmallerClick, onBiggerClick } from './scale.js';
 import { onEffectChange } from './slider-effect.js';
 import { getData } from './api.js';
-import { showMessage } from './util.js';
+import { showMessage, showRedAlert } from './util.js';
 import { initFilters } from './filters.js';
 
-// Получаем данные с сервера и инициализируем приложение
+// Загрузка данных с сервера
 getData()
   .then((pictures) => {
     // Отрисовываем миниатюры
     renderThumbnails(pictures);
     // Сортировка миниатюр
     initFilters(pictures);
-
   })
-  .catch((error) => {
-    showMessage(error, 'Не удалось загрузить фотографии');
+  .catch(() => {
+    showRedAlert('Не удалось загрузить фотографии.');
   });
 
-initUploadModal(); // Форма загрузки фото
-onSmallerClick(); // Масштабирование изображения -
-onBiggerClick(); // Масштабирование изображения +
-
-document.querySelector('.effects__list').addEventListener('change', onEffectChange); // Эффекты для изображения
+initUploadModal();
+onSmallerClick();
+onBiggerClick();
+document.querySelector('.effects__list').addEventListener('change', onEffectChange);
 
 // Отправка формы
-setUserFormSubmit(() => {
-  showMessage('success'); // Показываем сообщение об успехе
-  closePhotoEditor(); // Закрываем форму редактирования
-});
+setUserFormSubmit(
+  () => { // Успешная отправка
+    showMessage('success');
+    closePhotoEditor();
+  },
+  () => { // Ошибка отправки
+    showRedAlert('Не удалось отправить форму. Попробуйте ещё раз.');
+  }
+);
