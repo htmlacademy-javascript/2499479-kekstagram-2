@@ -1,5 +1,5 @@
 import { openBigPicture } from './fullsize.js';
-import { throttle } from './throttle.js'; // Предполагается, что throttle вынесен в отдельный модуль
+import { throttle } from './throttle.js';
 
 const picturesContainer = document.querySelector('.pictures');
 
