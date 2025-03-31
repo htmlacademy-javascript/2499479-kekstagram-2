@@ -1,6 +1,7 @@
 import { openBigPicture } from './fullsize.js';
+import { throttle } from './throttle.js';
 
-const picturesContainer = document.querySelector('.pictures'); // Блок с миниатюрами
+const picturesContainer = document.querySelector('.pictures');
 
 const renderThumbnails = (pictures) => {
   const fragment = document.createDocumentFragment();
@@ -13,8 +14,10 @@ const renderThumbnails = (pictures) => {
     pictureElement.querySelector('.picture__likes').textContent = picture.likes;
     pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
 
-    // Добавляем обработчик клика
-    pictureElement.addEventListener('click', () => openBigPicture(picture));
+    // Ограничиваем частоту кликов
+    pictureElement.addEventListener('click', throttle(() => {
+      openBigPicture(picture);
+    }, 300)); // Задержка 300 мс
 
     fragment.appendChild(pictureElement);
   });
@@ -23,7 +26,7 @@ const renderThumbnails = (pictures) => {
 };
 
 const clearPictures = () => {
-  const pictures = picturesContainer.querySelectorAll('.picture'); // Ищите по классу ваших миниатюр
+  const pictures = picturesContainer.querySelectorAll('.picture');
   pictures.forEach((picture) => picture.remove());
 };
 
