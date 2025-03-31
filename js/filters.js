@@ -10,6 +10,7 @@ const initFilters = (pictures) => {
 
   // Показываем блок фильтров (если скрыт)
   sortBlock.classList.remove('img-filters--inactive');
+
   // Проверка и отображение блока
   if (!sortBlock) {
     throw new Error('Блок фильтров не найден!');
