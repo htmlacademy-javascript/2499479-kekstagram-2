@@ -32,6 +32,56 @@ function sliderNone() {
 }
 
 // Функция для изменения эффекта
+function updateSliderOptions(effect) {
+  const options = {
+    'chrome': {
+      range: { min: 0, max: 1 },
+      start: 1,
+      step: 0.1,
+      filter: (value) => `grayscale(${value})`
+    },
+    'sepia': {
+      range: { min: 0, max: 1 },
+      start: 1,
+      step: 0.1,
+      filter: (value) => `sepia(${value})`
+    },
+    'marvin': {
+      range: { min: 0, max: 100 },
+      start: 100,
+      step: 1,
+      filter: (value) => `invert(${value}%)`
+    },
+    'phobos': {
+      range: { min: 0, max: 3 },
+      start: 3,
+      step: 0.1,
+      filter: (value) => `blur(${value}px)`
+    },
+    'heat': {
+      range: { min: 1, max: 3 },
+      start: 3,
+      step: 0.1,
+      filter: (value) => `brightness(${value})`
+    }
+  };
+
+  if (options[effect]) {
+    sliderElement.noUiSlider.updateOptions({
+      range: options[effect].range,
+      start: options[effect].start,
+      step: options[effect].step
+    });
+
+    sliderElement.noUiSlider.on('update', () => {
+      const value = sliderElement.noUiSlider.get();
+      img.style.filter = options[effect].filter(value);
+      effectLevelValue.value = value;
+    });
+  }
+}
+
+// Функция для изменения эффекта
 const onEffectChange = (evt) => {
   const effect = evt.target.value;
 
@@ -41,69 +91,7 @@ const onEffectChange = (evt) => {
     img.style.filter = 'none';
   } else {
     effectLevelElement.classList.remove('hidden');
-  }
-
-  // Обновляем параметры слайдера и применяем фильтры
-  if (effect === 'chrome') {
-    sliderElement.noUiSlider.updateOptions({
-      range: { min: 0, max: 1 },
-      start: 1,
-      step: 0.1,
-    });
-
-    sliderElement.noUiSlider.on('update', () => {
-      const value = sliderElement.noUiSlider.get();
-      img.style.filter = `grayscale(${value})`;
-      effectLevelValue.value = value;
-    });
-  } else if (effect === 'sepia') {
-    sliderElement.noUiSlider.updateOptions({
-      range: { min: 0, max: 1 },
-      start: 1,
-      step: 0.1,
-    });
-
-    sliderElement.noUiSlider.on('update', () => {
-      const value = sliderElement.noUiSlider.get();
-      img.style.filter = `sepia(${value})`;
-      effectLevelValue.value = value;
-    });
-  } else if (effect === 'marvin') {
-    sliderElement.noUiSlider.updateOptions({
-      range: { min: 0, max: 100 },
-      start: 100,
-      step: 1,
-    });
-
-    sliderElement.noUiSlider.on('update', () => {
-      const value = sliderElement.noUiSlider.get();
-      img.style.filter = `invert(${value}%)`;
-      effectLevelValue.value = value;
-    });
-  } else if (effect === 'phobos') {
-    sliderElement.noUiSlider.updateOptions({
-      range: { min: 0, max: 3 },
-      start: 3,
-      step: 0.1,
-    });
-
-    sliderElement.noUiSlider.on('update', () => {
-      const value = sliderElement.noUiSlider.get();
-      img.style.filter = `blur(${value}px)`;
-      effectLevelValue.value = value;
-    });
-  } else if (effect === 'heat') {
-    sliderElement.noUiSlider.updateOptions({
-      range: { min: 1, max: 3 },
-      start: 3,
-      step: 0.1,
-    });
-
-    sliderElement.noUiSlider.on('update', () => {
-      const value = sliderElement.noUiSlider.get();
-      img.style.filter = `brightness(${value})`;
-      effectLevelValue.value = value;
-    });
+    updateSliderOptions(effect); // Используем новую функцию вместо старого кода
   }
 };
 

@@ -1,5 +1,6 @@
 import { openBigPicture } from './fullsize.js';
 import { throttle } from './throttle.js';
+import { CLICK_DELAY } from './data.js';
 
 const picturesContainer = document.querySelector('.pictures');
 
@@ -17,7 +18,7 @@ const renderThumbnails = (pictures) => {
     // Ограничиваем частоту кликов
     pictureElement.addEventListener('click', throttle(() => {
       openBigPicture(picture);
-    }, 300)); // Задержка 300 мс
+    }, CLICK_DELAY));
 
     fragment.appendChild(pictureElement);
   });

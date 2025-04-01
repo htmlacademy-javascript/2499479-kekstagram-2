@@ -1,6 +1,6 @@
 import { renderThumbnails } from './thumbnails.js';
 import { initUploadModal, setUserFormSubmit, closePhotoEditor } from './upload-photo-form.js';
-import { onSmallerClick, onBiggerClick } from './scale.js';
+import { onSmallerClick, onBiggerClick, resetScale } from './scale.js';
 import { onEffectChange } from './slider-effect.js';
 import { getData } from './api.js';
 import { showMessage, showRedAlert } from './util.js';
@@ -15,7 +15,7 @@ getData()
     initFilters(pictures);
   })
   .catch(() => {
-    showRedAlert('Не удалось загрузить фотографии.');
+    showRedAlert();
   });
 
 initUploadModal();
@@ -28,8 +28,6 @@ setUserFormSubmit(
   () => { // Успешная отправка
     showMessage('success');
     closePhotoEditor();
-  },
-  () => { // Ошибка отправки
-    showRedAlert('Не удалось отправить форму. Попробуйте ещё раз.');
+    resetScale();
   }
 );

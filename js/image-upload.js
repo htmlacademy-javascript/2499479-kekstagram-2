@@ -1,14 +1,14 @@
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const extensions = ['jpg', 'jpeg', 'png'];
 
 const isValidImageFormat = (file) => {
   if (!file) {
     return false;
   }
   const fileName = file.name.toLowerCase();
-  return FILE_TYPES.some((type) => fileName.endsWith(type));
+  return extensions.some((type) => fileName.endsWith(type));
 };
 
-const fileUpload = (fileInput, previewImage, effectsPreviews, onError) => {
+const uploadFile = (fileInput, previewImage, effectsPreviews, onError) => {
   const file = fileInput.files[0];
 
   if (!isValidImageFormat(file)) {
@@ -26,4 +26,4 @@ const fileUpload = (fileInput, previewImage, effectsPreviews, onError) => {
   return true;
 };
 
-export { fileUpload };
+export { uploadFile };

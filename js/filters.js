@@ -1,8 +1,6 @@
 import { renderThumbnails, clearPictures } from './thumbnails.js';
 import { debounce } from './debounce.js';
-
-// Задержка перерисовки изображений
-const RERENDER_DELAY = 500;
+import { MAX_NUMBER_RANDOM_PICTURES, RERENDER_DELAY } from './data.js';
 
 //функция сортировки
 const initFilters = (pictures) => {
@@ -44,12 +42,12 @@ const initFilters = (pictures) => {
 
   sortRandom?.addEventListener('click', () => {
     setActiveButton(sortRandom);
-    debouncedRender([...pictures].sort(() => Math.random() - 0.5).slice(0, 10)); // 10 случайных
+    debouncedRender([...pictures].sort(() => Math.random() - 0.5).slice(0, MAX_NUMBER_RANDOM_PICTURES));
   });
 
   sortDiscussed?.addEventListener('click', () => {
     setActiveButton(sortDiscussed);
-    debouncedRender([...pictures].sort((a, b) => b.comments.length - a.comments.length)); // По комментариям
+    debouncedRender([...pictures].sort((a, b) => b.comments.length - a.comments.length));
   });
 };
 
