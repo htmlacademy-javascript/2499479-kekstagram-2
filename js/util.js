@@ -1,26 +1,38 @@
-const ALERT_SHOW_TIME = 5000;
+import { ALERT_SHOW_TIME } from './data.js';
 
 const showRedAlert = (message) => {
-  const alertContainer = document.createElement('div');
-  alertContainer.style.zIndex = '100';
-  alertContainer.style.position = 'absolute';
-  alertContainer.style.left = '0';
-  alertContainer.style.top = '0';
-  alertContainer.style.right = '0';
-  alertContainer.style.padding = '10px 3px';
-  alertContainer.style.fontSize = '30px';
-  alertContainer.style.textAlign = 'center';
-  alertContainer.style.backgroundColor = 'red';
+  // Находим шаблон и клонируем его
+  const redAlertContainerTemplate = document.querySelector('#data-error')
+    .content
+    .querySelector('.data-error');
 
-  alertContainer.textContent = message;
+  const alertContainer = redAlertContainerTemplate.cloneNode(true);
 
-  document.body.append(alertContainer);
+  // Устанавливаем текст ошибки, если он передан
+  const alertTitle = alertContainer.querySelector('.data-error__title');
+  if (message && alertTitle) {
+    alertTitle.textContent = message;
+  }
 
+  // Добавляем стили
+  redAlertContainerTemplate.style.zIndex = '100';
+  redAlertContainerTemplate.style.position = 'absolute';
+  redAlertContainerTemplate.style.left = '0';
+  redAlertContainerTemplate.style.top = '0';
+  redAlertContainerTemplate.style.right = '0';
+  redAlertContainerTemplate.style.padding = '10px 3px';
+  redAlertContainerTemplate.style.fontSize = '30px';
+  redAlertContainerTemplate.style.textAlign = 'center';
+  redAlertContainerTemplate.style.backgroundColor = 'red';
+
+  // Добавляем контейнер в DOM
+  document.body.append(redAlertContainerTemplate);
+
+  // Автоматическое скрытие через 5 секунд
   setTimeout(() => {
-    alertContainer.remove();
+    redAlertContainerTemplate.remove();
   }, ALERT_SHOW_TIME);
 };
-
 
 // Блок с сообщением об ошибке
 const alertContainerTemplate = document.querySelector('#error')
@@ -33,10 +45,16 @@ const messageContainerTemplate = document.querySelector('#success')
   .querySelector('.success');
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
+
 // Сообщение с ошибкой
-const showAlert = () => {
+const showAlert = (message) => {
   const alertContainer = alertContainerTemplate.cloneNode(true);
   const alertCloseButton = alertContainer.querySelector('.error__button');
+  const alertMessage = alertContainer.querySelector('.error__message');
+
+  if (alertMessage) {
+    alertMessage.textContent = message;
+  }
 
   alertContainer.style.zIndex = 100;
 
@@ -103,4 +121,4 @@ const showMessage = () => {
   document.addEventListener('click', onOutBoxClick);
 };
 
-export { isEscapeKey, showRedAlert, showAlert, showMessage};
+export { isEscapeKey, showRedAlert, showAlert, showMessage };

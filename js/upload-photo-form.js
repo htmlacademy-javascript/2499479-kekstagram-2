@@ -1,7 +1,9 @@
-import { isEscapeKey, showRedAlert, showAlert, showMessage } from './util.js';
+import { isEscapeKey, showAlert, showMessage } from './util.js';
 import { sendData } from './api.js';
 import { sliderNone } from './slider-effect.js';
-import { fileUpload } from './image-upload.js';
+import { uploadFile } from './image-upload.js';
+import { resetScale } from './scale.js';
+import { HASHTAG_MAX_QUANTITY, HASHTAG_MAX_LENGTH, COMMENT_MAX_LENGTH } from './data.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const pageBody = document.querySelector('body');
@@ -58,7 +60,7 @@ const onDocumentKeydown = (evt) => {
 // Инициализация модального окна загрузки фото
 const initUploadModal = () => {
   uploadFileControl.addEventListener('change', () => {
-    if (fileUpload(uploadFileControl, imagePreview, effectsPreviews, showAlert)) {
+    if (uploadFile(uploadFileControl, imagePreview, effectsPreviews, showAlert)) {
       photoEditorForm.classList.remove('hidden');
     }
     pageBody.classList.add('modal-open');
@@ -77,18 +79,19 @@ function closePhotoEditor() {
   pristine.reset();
   sliderNone();
   updateSubmitButtonState();
+  resetScale();
 }
 
-// Блокировка кнопки отправки
-const blockSubmitButton = () => {
-  submitButton.disabled = true;
-  submitButton.textContent = SubmitButtonText.SENDING;
-};
-
-// Разблокировка кнопки отправки
-const unblockSubmitButton = () => {
-  submitButton.disabled = false;
-  submitButton.textContent = SubmitButtonText.IDLE;
+const setSubmitButtonState = (shouldBlock) => {
+  if (shouldBlock) {
+    // Блокируем кнопку
+    submitButton.disabled = true;
+    submitButton.textContent = SubmitButtonText.SENDING;
+  } else {
+    // Разблокируем кнопку
+    submitButton.disabled = false;
+    submitButton.textContent = SubmitButtonText.IDLE;
+  }
 };
 
 // Валидатор для хэштегов с подробными сообщениями об ошибках
@@ -102,7 +105,7 @@ pristine.addValidator(hashtagInput, (value) => {
   const hashtags = trimmedValue.split(/\s+/).filter((item) => item !== '');
   const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
 
-  if (hashtags.length > 5) {
+  if (hashtags.length > HASHTAG_MAX_QUANTITY) {
     return false;
   }
 
@@ -127,8 +130,8 @@ pristine.addValidator(hashtagInput, (value) => {
 
   const hashtags = trimmedValue.split(/\s+/).filter((item) => item !== '');
 
-  if (hashtags.length > 5) {
-    return 'Нельзя указать больше 5 хэштегов!';
+  if (hashtags.length > HASHTAG_MAX_QUANTITY) {
+    return `Нельзя указать больше ${HASHTAG_MAX_QUANTITY} хэштегов!`;
   }
 
   const lowerCaseTags = hashtags.map((item) => item.toLowerCase());
@@ -146,8 +149,8 @@ pristine.addValidator(hashtagInput, (value) => {
       return 'Хэштег должен начинаться с #!';
     }
 
-    if (hashtag.length > 20) {
-      return 'Максимальная длина хэштега - 20 символов!';
+    if (hashtag.length > HASHTAG_MAX_LENGTH) {
+      return `Максимальная длина хэштега - ${HASHTAG_MAX_LENGTH} символов!`;
     }
 
     if (!/^#[a-zа-яё0-9]{1,19}$/i.test(hashtag)) {
@@ -159,7 +162,7 @@ pristine.addValidator(hashtagInput, (value) => {
 });
 
 // Валидатор для комментария
-pristine.addValidator(commentInput, (value) => value.length <= 140, 'Комментарий не должен превышать 140 символов!');
+pristine.addValidator(commentInput, (value) => value.length <= COMMENT_MAX_LENGTH, `Комментарий не должен превышать ${COMMENT_MAX_LENGTH} символов!`);
 
 let isFormSubmitting = false;
 
@@ -176,14 +179,12 @@ const setUserFormSubmit = (onSuccess) => {
 
     if (isValid) {
       isFormSubmitting = true;
-      blockSubmitButton();
+      setSubmitButtonState(true);
       sendData(new FormData(evt.target))
         .then(onSuccess)
-        .catch((err) => {
-          showRedAlert(err.message);
-        })
+
         .finally(() => {
-          unblockSubmitButton();
+          setSubmitButtonState(false);
           isFormSubmitting = false;
         });
     } else {

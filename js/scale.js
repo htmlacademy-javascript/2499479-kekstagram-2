@@ -1,7 +1,4 @@
-// Константа, определяющая шаг изменения масштаба изображения
-const SCALE_STEP = 0.25;
-const MAX_SCALE = 1;
-const MIN_SCALE = 0.25;
+import { SCALE_STEP, MAX_SCALE, MIN_SCALE } from './data.js';
 
 // Находим элементы формы загрузки изображения в DOM
 const img = document.querySelector('.img-upload__preview img'); // Превью изображения
@@ -40,4 +37,9 @@ smaller.addEventListener('click', onSmallerClick);
 // Добавляем обработчик клика по кнопке увеличения масштаба
 bigger.addEventListener('click', onBiggerClick);
 
-export { onSmallerClick, onBiggerClick };
+const resetScale = () => {
+  scale = 1; // Сбрасываем масштаб к значению по умолчанию
+  updateScale(); // Обновляем отображение
+};
+
+export { onSmallerClick, onBiggerClick, resetScale };

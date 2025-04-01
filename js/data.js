@@ -1,0 +1,33 @@
+const MAX_NUMBER_RANDOM_PICTURES = 10;
+const RERENDER_DELAY = 500;
+// Константа, определяющая шаг изменения масштаба изображения
+const SCALE_STEP = 0.25;
+const MAX_SCALE = 1;
+const MIN_SCALE = 0.25;
+// Константы для валидации формы
+const HASHTAG_MAX_QUANTITY = 5;
+const HASHTAG_MAX_LENGTH = 20;
+const HASHTAG_MIN_LENGTH = 1;
+const COMMENT_MAX_LENGTH = 140;
+
+const CLICK_DELAY = 300;
+
+const ALERT_SHOW_TIME = 5000;
+
+export {
+  MAX_NUMBER_RANDOM_PICTURES,
+  RERENDER_DELAY,
+
+  SCALE_STEP,
+  MAX_SCALE,
+  MIN_SCALE,
+
+  HASHTAG_MAX_QUANTITY,
+  HASHTAG_MAX_LENGTH,
+  HASHTAG_MIN_LENGTH,
+  COMMENT_MAX_LENGTH,
+
+  CLICK_DELAY,
+
+  ALERT_SHOW_TIME,
+};
